@@ -1,0 +1,12 @@
+[submodule "deps/cowboy"]
+	path = deps/cowboy
+	url = https://github.com/ninenines/cowboy.git
+[submodule "deps/jsx"]
+	path = deps/jsx
+	url = https://github.com/talentdeficit/jsx.git
+[submodule "deps/ranch"]
+	path = deps/ranch
+	url = https://github.com/ninenines/ranch.git
+[submodule "deps/cowlib"]
+	path = deps/cowlib
+	url = https://github.com/ninenines/cowlib.git
