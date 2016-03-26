@@ -26,6 +26,8 @@ all	: jsx cowlib ranch cowboy web_server
 
 web_server : 
 	mkdir -p ebin/
+	mkdir -p tmp/
+	mkdir -p testlogs/
 	cp  src/web_server.app.src ebin/web_server.app
 	$(ERLC) -o ebin -I $(COWLIB_ROOT)/include \
 		-pa $(COWLIB_ROOT)/ebin  \
@@ -39,6 +41,7 @@ jsx	:
 
 cowlib	:
 	mkdir -p $(COWLIB_ROOT)/ebin/
+	cp $(COWLIB_ROOT)/src/cowlib.app.src $(COWLIB_ROOT)/ebin/cowlib.app
 	$(ERLC)  -I $(COWLIB_ROOT)/include -o $(COWLIB_ROOT)/ebin deps/cowlib/src/*.erl
 ranch	:
 	mkdir -p $(RANCH_ROOT)/ebin/
