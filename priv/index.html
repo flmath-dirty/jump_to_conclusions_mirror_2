@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html >
+
+  <head>
+    <link href="style.css" rel="stylesheet"/>
+    
+   
+  </head>
+  
+  <body ng-app="myApp" ng-controller="GetSuites">
+    <header>
+      <h2>Don't jump to conclusions</h2>
+    </header>
+    <nav>
+   <form>
+     	<ul>
+	  
+	  <li ng-repeat="service in services.data" ng-click="toggleActive(service)" ng-click="get_testcases()" ng-class="{active:service.active}">
+	    {{service.file}} </li>
+	</ul> 
+ 	
+<!---	<div class="total"> --->
+		<!-- Number of activated suites. -->
+<!---		Total: <span>{{total()}}</span>
+	</div>
+	<div class="active_suites">
+
+		List: <span>{{active_suites()}}</span> 
+	</div> --->
+        
+</form>
+</nav>
+
+  <nav2>
+  <form>
+    <ul>	  
+      <li ng-repeat="service in testcases.data" ng-click="toggleActiveTc(service)" ng-class="{active:service.active}">
+	{{service.tc}} </li>
+    </ul> 
+    
+<!---    <div class="total"> --->
+      <!-- Number of activated suites. -->
+<!--- 		Total: <span>{{total()}}</span>
+     </div>
+	<div class="active_suites">
+
+		List: <span>{{active_suites()}}</span> 
+	</div> --->
+</form>
+      </nav2>
+
+      <nav3>
+  <form>
+<button class="button my_button" ng-click="run_testcases()">RUN</button>
+    
+
+</form>
+      </nav3>
+
+
+ <script src="js/share/angular.min.js"></script>
+    
+    <script src="js/app.js"></script>
+    <script src="js/controllers/suites.js"></script>
+  </body>
+  
+</html>

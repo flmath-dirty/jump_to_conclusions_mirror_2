@@ -1,0 +1,2 @@
+-record(suites,{file,path,active}).
+-record(testcase,{id,file,path,active}).
