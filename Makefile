@@ -38,8 +38,10 @@ jsx	:
 	$(ERLC)  -o $(JSX_ROOT)/ebin deps/jsx/src/*.erl
 
 cowlib	:
+	mkdir -p $(COWLIB_ROOT)/ebin/
 	$(ERLC)  -I $(COWLIB_ROOT)/include -o $(COWLIB_ROOT)/ebin deps/cowlib/src/*.erl
 ranch	:
+	mkdir -p $(RANCH_ROOT)/ebin/
 	cp $(RANCH_ROOT)/src/ranch.app.src $(RANCH_ROOT)/ebin/ranch.app
 	$(ERLC)  -o  $(RANCH_ROOT)/ebin  $(RANCH_ROOT)/src/*.erl
 cowboy	:
