@@ -25,9 +25,9 @@ start(_Type, _Args) ->
 		   {"/suites", suites_handler, []},
  		   {"/run_tc", run_handler, []},
 		   {"/", cowboy_static, 
-		    {priv_file, web_server, "index.html"}},
+		    {priv_file, jump_to_conclusions, "index.html"}},
 		   {"/[...]", cowboy_static, 
-		    {priv_dir, web_server, "", [{mimetypes, cow_mimetypes, all}]}
+		    {priv_dir, jump_to_conclusions, "", [{mimetypes, cow_mimetypes, all}]}
 		   }
 		 ]
 	   }

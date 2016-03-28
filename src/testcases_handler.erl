@@ -79,9 +79,8 @@ selected_suites_to_list(JsonListSelectedSuites)->
 fetch_pathes_and_testacases(ListOfSuitesPathes) ->
  	lists:foldl(fun(X, Acc)-> 
 	     BaseName = filename:basename(X),
-	    %% BeamDir = application:get_env(web_server,beam_dir,[]),	
-	     BeamDir = "/home/math/proj/web_server/tmp",%%make as env variable
-	     code:purge(list_to_atom(BaseName)),
+	     BeamDir = application:get_env(web_server,tmp_dir,[]),	
+      	     code:purge(list_to_atom(BaseName)),
 	     compile:file(X,[{outdir,BeamDir}]),
 	     code:load_abs(filename:join(BeamDir,BaseName)),
 	     Module = list_to_atom(BaseName),

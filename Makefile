@@ -13,7 +13,7 @@ PA_PATHS =	-pa $(JSX_ROOT)/ebin	\
 		-pa $(COWLIB_ROOT)/ebin	\
 		-pa $(RANCH_ROOT)/ebin	\
 		-pa $(COWBOY_ROOT)/ebin	\
-		-pa ebin 
+		-pa ../jump_to_conclusions/ebin 
 ALL_PATHS = -I $(COWLIB_ROOT)/include \
 		$(PA_PATHS)
 
@@ -29,7 +29,8 @@ web_server :
 	mkdir -p tmp/
 	mkdir -p testlogs/
 	cp  src/web_server.app.src ebin/web_server.app
-	$(ERLC) -o ebin -I $(COWLIB_ROOT)/include \
+	$(ERLC) -o ../jump_to_conclusions/ebin \
+		-I $(COWLIB_ROOT)/include \
 		-pa $(COWLIB_ROOT)/ebin  \
 		-pa $(RANCH_ROOT)/ebin   \
 		-pa $(COWBOY_ROOT)/ebin  \
@@ -42,7 +43,7 @@ jsx	:
 cowlib	:
 	mkdir -p $(COWLIB_ROOT)/ebin/
 	cp $(COWLIB_ROOT)/src/cowlib.app.src $(COWLIB_ROOT)/ebin/cowlib.app
-	$(ERLC)  -I $(COWLIB_ROOT)/include -o $(COWLIB_ROOT)/ebin deps/cowlib/src/*.erl
+	$(ERLC)  -I $(COWLIB_ROOT)/include -o $(COWLIB_ROOT)/ebin $(COWLIB_ROOT)/src/*.erl
 ranch	:
 	mkdir -p $(RANCH_ROOT)/ebin/
 	cp $(RANCH_ROOT)/src/ranch.app.src $(RANCH_ROOT)/ebin/ranch.app

@@ -1,6 +1,4 @@
-%% Feel free to use, reuse and abuse the code in this file.
-
-%% @doc Hello world handler.
+%% @doc Suites handler.
 -module(suites_handler).
 
 -export([init/2]).
@@ -9,7 +7,7 @@
 
 -include("message_templates.hrl").
 
-%%-define(TEST,1).
+%-define(TEST,1).
 -ifdef(TEST).
 -define(DBG(Message),io:format("Module:~p, Line:~p, :~p~n",[?MODULE ,?LINE, Message])).
 -else.
