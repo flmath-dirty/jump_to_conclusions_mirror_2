@@ -1,4 +1,4 @@
-PROJ_NAME =   -sname jpTgui
+PROJ_NAME =   -sname jtc
 DEPS = ranch cowlib cowboy jsx
 
 ERLC = erlc
@@ -13,7 +13,7 @@ PA_PATHS =	-pa $(JSX_ROOT)/ebin	\
 		-pa $(COWLIB_ROOT)/ebin	\
 		-pa $(RANCH_ROOT)/ebin	\
 		-pa $(COWBOY_ROOT)/ebin	\
-		-pa ../jump_to_conclusions/ebin 
+		-pa ebin 
 ALL_PATHS = -I $(COWLIB_ROOT)/include \
 		$(PA_PATHS)
 
@@ -29,7 +29,7 @@ web_server :
 	mkdir -p tmp/
 	mkdir -p testlogs/
 	cp  src/web_server.app.src ebin/web_server.app
-	$(ERLC) -o ../jump_to_conclusions/ebin \
+	$(ERLC) -o ebin \
 		-I $(COWLIB_ROOT)/include \
 		-pa $(COWLIB_ROOT)/ebin  \
 		-pa $(RANCH_ROOT)/ebin   \
@@ -66,7 +66,7 @@ clean	:
 stop	:
 	$(EC_SERV)  -a 'init stop []' -c .erlang.cookie -s
 kill_node	:
-	ps aux | grep jpTgui | grep -v grep | head -n 1 \
+	ps aux | grep jtc | grep -v grep | head -n 1 \
 	| awk '{print $$2}' | xargs -r kill
 script	: kill_node
 #	epmd -kill
