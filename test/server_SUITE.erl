@@ -11,7 +11,7 @@
 -include_lib("common_test/include/ct.hrl").
 
 all() -> 
-    [my_test_case_1, my_test_case_2].
+    [my_test_case_1, my_test_case_2, {group, asd}].
 
 
 my_test_case_1(_Config) -> 
