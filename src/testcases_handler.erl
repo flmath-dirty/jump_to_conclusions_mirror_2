@@ -18,13 +18,13 @@
 -endif.
 
 init(Req, Opts) ->
- _Headers = cowboy_req:headers( Req),
-   %% _Headers = cowboy_req:meta(media_type,Req),
+    _Headers = cowboy_req:headers(Req),
+    %%_Headers = cowboy_req:meta(media_type,Req),
     ?DBG([[_Headers]]),
     {cowboy_rest, Req, Opts}.
 
 allowed_methods(Req, State) ->
-        {[<<"GET">>, <<"POST">>], Req, State}.
+    {[<<"GET">>, <<"POST">>], Req, State}.
 
 charsets_accepted(Req, State) ->
     {[<<"utf-8">>,<<"UTF-8">>], Req, State}.
@@ -37,7 +37,7 @@ content_types_provided(Req, State) ->
 content_types_accepted(Req, State) ->
     {[
       {{<<"application">>, <<"json">>, [{<<"charset">>, <<"utf-8">>}]},from_json}
-	  ], Req, State}.
+     ], Req, State}.
 
 from_json(Req, State) ->
     ?DBG(["from json"]),
@@ -65,9 +65,14 @@ tc_list_to_jsx(ListOfPathTcTuples) ->
     tc_list_to_jsx(ListOfPathTcTuples, []).
 
 tc_list_to_jsx([{Path,Tc}|ListOfPathTcTuples], Acc) when is_atom(Tc) ->
-    JsxList = 
-	[{<<"path">>,re:replace(Path,"/","%2F",[global, {return,binary}])},
-	 {<<"tc">>, atom_to_binary(Tc,utf8)},
+    Record = 
+	#testcase{id = Tc,
+		  path = Path,
+		  active = false},
+    ?DBG(Record),    
+JsxList = 
+[{<<"path">>,re:replace(Path,"/","%2F",[global, {return,binary}])},
+ {<<"tc">>, atom_to_binary(Tc,utf8)},
 	 {<<"active">>,false}],
     tc_list_to_jsx(ListOfPathTcTuples, [JsxList|Acc]);
 tc_list_to_jsx([], Acc) ->

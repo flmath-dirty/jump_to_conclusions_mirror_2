@@ -34,29 +34,64 @@ suites_as_json()->
     FilesString = os:cmd(FindSuitesCmd),
     Files= string:tokens(FilesString,"\n"),
     ?DBG(Files),
-    SuitesRecord = lists:map(fun(X)->#suites{
-	        file=list_to_binary(filename:basename(X, ".erl")),
-		path=re:replace(X,"/","%2F",[global, {return,binary}]),
-		active=false} end, Files),
-    SuitesBinaryList = suites_to_json(SuitesRecord),
-    ?DBG(SuitesBinaryList),     
-    SuitesJSON = jsx:encode(SuitesBinaryList), 
+    SuitesRecords = suites_paths_to_records(Files),
+    SuitesJsxList = suites_records_to_jsx(SuitesRecords),
+    ?DBG(SuitesJsxList),     
+    SuitesJSON = jsx:encode(SuitesJsxList), 
  ?DBG(SuitesJSON),
  <<"{\"data\" : ",SuitesJSON/bitstring,"}">>.
 
 
-suites_to_json(List)->
-	RecordList=record_info(fields,suites),
-	?DBG(["suites_to_json ",RecordList]),
-	records_to_json(RecordList,List,[]).
 
-records_to_json(_RecordList,[],Acc)->
+suites_paths_to_records(Files)->
+    suites_paths_to_records(Files, []).
+suites_paths_to_records([], Acc) ->
+    Acc;
+suites_paths_to_records([H|Files], Acc) ->
+    Record = 
+	#suites{file=filename:basename(H, ".erl"),
+		path=H,
+		active=false},
+    suites_paths_to_records(Files, [Record|Acc]).
+
+suites_records_to_jsx(List)->
+    RecordList=record_info(fields,suites),
+    ?DBG(["suites_to_json ",RecordList]),
+    ListWithBinValues  = jsx_values_in_suites_records(List),
+    records_to_jsx(RecordList,ListWithBinValues ).
+
+
+jsx_values_in_suites_records(SuitesRecords) ->
+   jsx_values_in_suites_records(SuitesRecords,[]).
+jsx_values_in_suites_records([], Acc) ->
+    Acc;
+jsx_values_in_suites_records([H|SuitesRecords], Acc) ->
+    Record = 
+	#suites{file=list_to_binary(H#suites.file),
+		path=re:replace(H#suites.path,"/","%2F",[global, {return,binary}]),
+		active=H#suites.active},
+    jsx_values_in_suites_records(SuitesRecords,[Record|Acc]).
+
+
+records_to_jsx(RecordList,List) ->
+    records_to_jsx(RecordList,List,[]).
+records_to_jsx(_RecordList,[],Acc)->
 	Acc;
-records_to_json(RecordList,[Head|Tail],Acc)->
+records_to_jsx(RecordList,[Head|Tail],Acc)->
 	?DBG(["records_to_json ",Head]),	
 	[_|Values] = tuple_to_list(Head),
 	?DBG(["records_to_json ",Values]),
 	Translated=lists:zipwith(
 		fun(X,Y)->{list_to_binary(atom_to_list(X)),Y} end, 
 				RecordList, Values),
-	[Translated|records_to_json(RecordList,Tail,Acc)].
+	[Translated|records_to_jsx(RecordList,Tail,Acc)].
+
+
+
+
+
+
+
+
+
+
