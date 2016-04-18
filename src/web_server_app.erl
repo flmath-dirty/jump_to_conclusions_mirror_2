@@ -4,8 +4,9 @@
 -module(web_server_app).
 -behaviour(application).
 
-%-define(TEST,1).
+-include("message_templates.hrl").
 
+%-define(TEST,1).
 -ifdef(TEST).
 -define(DBG(Message),io:format("Module:~p, Line:~p, :~p~n",[?MODULE ,?LINE, Message])).
 -else.
@@ -32,7 +33,10 @@ start(_Type, _Args) ->
 		 ]
 	   }
 	  ]),
-	  ?DBG("Started"),
+    ?DBG("Started"),
+    
+    jtc_tc_db = ets:new(jtc_tc_db,[bag,{keypos,#testcase.path},named_table,public]),
+    jtc_suites_db = ets:new(jtc_suites_db,[set,{keypos,#suites.path},named_table,public]),
     {ok, _} = cowboy:start_http(http, 100, [{port, 8080}], 
 				[{env, [{dispatch, Dispatch}]}
 				]),

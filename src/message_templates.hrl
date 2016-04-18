@@ -1,2 +1,3 @@
--record(suites,{file,path,active}).
--record(testcase,{id,group, path,active}).
+-record(suites,{file, path, active, update_time}).
+-record(testcase,{id, path, active, uniq_no}).
+-record(options,{last_uniq_no}).

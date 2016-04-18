@@ -41,17 +41,17 @@ content_types_accepted(Req, State) ->
 
 from_json(Req, State) ->
     ?DBG(["from json"]),
-    case cowboy_req:method(Req) of
+    try cowboy_req:method(Req) of
 	<<"POST">> ->
 	    ?DBG(["POST received"]), 
 	    ?DBG(["Request testcases"]),
 	    {ok,ReqBody,Req2} = cowboy_req:body(Req),
 	    [{<<"data">>,SelectedSuites}] = jsx:decode(ReqBody),	
 	    ?DBG(SelectedSuites),
-	    ListOfSuites = selected_suites_to_list(SelectedSuites),
-	    ListOfPathTcTuples = fetch_pathes_and_testacases(ListOfSuites),
-	    ?DBG(ListOfPathTcTuples),
-	    PreJsonList = tc_list_to_jsx(ListOfPathTcTuples),
+	    ListOfSuitesPathes = selected_suites_to_path_list(SelectedSuites),
+	    ListOfTcRecords = testcase_db_update(ListOfSuitesPathes),
+	    ?DBG(ets:tab2list(jtc_tc_db)),
+	    PreJsonList = tc_records_to_jsx(ListOfTcRecords),
 	    ?DBG(PreJsonList),
 	    TcJson = jsx:encode(PreJsonList),
 	    ?DBG(TcJson),
@@ -60,51 +60,94 @@ from_json(Req, State) ->
 	    {true,cowboy_req:set_resp_body(Response,Req2),State};
 	_ ->
 	    {true, Req, State}
+    catch
+	ErrorClass:Error -> 
+	    error_logger:error_msg(
+	      "Error in POST testcases processing ~p: ~p ~n", [ErrorClass,Error]),
+	     {true, Req, State}
     end.
-tc_list_to_jsx(ListOfPathTcTuples) ->
-    tc_list_to_jsx(ListOfPathTcTuples, []).
 
-tc_list_to_jsx([{Path,Tc}|ListOfPathTcTuples], Acc) when is_atom(Tc) ->
-    Record = 
-	#testcase{id = Tc,
-		  path = Path,
-		  active = false},
-    ?DBG(Record),    
-JsxList = 
-[{<<"path">>,re:replace(Path,"/","%2F",[global, {return,binary}])},
- {<<"tc">>, atom_to_binary(Tc,utf8)},
-	 {<<"active">>,false}],
-    tc_list_to_jsx(ListOfPathTcTuples, [JsxList|Acc]);
-tc_list_to_jsx([], Acc) ->
+
+testcase_db_update(SelectedSuites) ->
+  testcase_db_update(SelectedSuites, []).
+
+testcase_db_update([H|SelectedSuites], Acc) ->
+    StringPath = bitstring_to_list(H),
+    UpdTime = filelib:last_modified(StringPath),
+    ?DBG(UpdTime),
+    [SuiteRecord] = ets:lookup(jtc_suites_db, H),
+    UpdatedRecords = 
+	case ets:take(jtc_tc_db, H)  of
+	    [] -> 
+		error_logger:info_msg(
+		  "No info about ~p: compiling~n", [H]),
+		compile_suite(StringPath);
+	    List -> 
+		case UpdTime == SuiteRecord#suites.update_time of
+		    true -> List;
+		    false -> 
+			error_logger:info_msg(
+			  "File ~p updated: recompiling~n", [H]),
+			CS = compile_suite(StringPath),
+			ets:insert(jtc_suites_db,SuiteRecord#suites{update_time = UpdTime}),
+			CS
+		end
+	end,
+    testcase_db_update(SelectedSuites, lists:append(UpdatedRecords,Acc));    
+testcase_db_update([],Acc) ->
+    ets:insert(jtc_tc_db,Acc),
+    Acc.
+
+tc_records_to_jsx(ListOfPathTcTuples) ->
+    tc_records_to_jsx(ListOfPathTcTuples, []).
+
+tc_records_to_jsx([#testcase{path=Path,id = Tc, active = Active}|ListOfPathTcTuples], Acc) 
+  when is_atom(Tc) ->
+    JsxList = 
+	[{<<"path">>,Path},
+	 {<<"tc">>, atom_to_binary(Tc,utf8)},
+	 {<<"active">>,Active}],
+    tc_records_to_jsx(ListOfPathTcTuples, [JsxList|Acc]);
+tc_records_to_jsx([], Acc) ->
     Acc;
-tc_list_to_jsx([Data|ListOfPathTcTuples], Acc) ->
-    error_logger:warning_msg("Not handled test description structure ~p~n", [Data]),
-    tc_list_to_jsx(ListOfPathTcTuples, Acc).
+tc_records_to_jsx([Data|ListOfPathTcTuples], Acc) ->
+    error_logger:warning_msg("Not test description structure matched ~p~n", [Data]),
+    tc_records_to_jsx(ListOfPathTcTuples, Acc).
 
 
-selected_suites_to_list(JsonListSelectedSuites)->
-    selected_suites_to_list(JsonListSelectedSuites,[]).
+selected_suites_to_path_list(JsonListSelectedSuites)->
+    selected_suites_to_path_list(JsonListSelectedSuites,[]).
 
-selected_suites_to_list([H|JsonListSelectedSuites], Acc)->
+selected_suites_to_path_list([H|JsonListSelectedSuites], Acc)->
     BinaryEncodedPath = proplists:get_value(<<"path">>,H),
-    UrlStringPath = binary_to_list(BinaryEncodedPath),
-    ListPath =re:split(UrlStringPath,"%2F",[{return,list}]),
-    Path = filename:rootname(filename:join(ListPath)),
-    selected_suites_to_list(JsonListSelectedSuites, [Path |Acc]);
-selected_suites_to_list([],Acc)->
+    selected_suites_to_path_list(JsonListSelectedSuites, [BinaryEncodedPath|Acc]);
+selected_suites_to_path_list([],Acc)->
     Acc.
 
-fetch_pathes_and_testacases(ListOfSuitesPathes) ->
-    fetch_pathes_and_testacases(ListOfSuitesPathes,[]).
+compile_suite(Path)->
+    BaseName = filename:rootname(filename:basename(Path)),
+    BeamDir = application:get_env(web_server,tmp_dir,[]),	
+    code:purge(list_to_atom(BaseName)),
+    compile:file(Path,[{outdir,BeamDir}]),
+    code:load_abs(filename:join(BeamDir,BaseName)),
+    Module = list_to_atom(BaseName),
+    PathBitstring = list_to_bitstring(Path),
+    TcRecords = [#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- Module:all()],
+    TcRecords.
 
-fetch_pathes_and_testacases([H|ListOfSuitesPathes],Acc) ->
-			BaseName = filename:basename(H),
-			BeamDir = application:get_env(web_server,tmp_dir,[]),	
-			code:purge(list_to_atom(BaseName)),
-			compile:file(H,[{outdir,BeamDir}]),
-			code:load_abs(filename:join(BeamDir,BaseName)),
-			Module = list_to_atom(BaseName),
-			TcTuples = [{H,Tc} || Tc <- Module:all()],
-    fetch_pathes_and_testacases(ListOfSuitesPathes,lists:append(TcTuples, Acc));
-fetch_pathes_and_testacases([] , Acc) ->
-    Acc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

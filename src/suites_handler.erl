@@ -27,20 +27,19 @@ list_to_json(Req, State) ->
     ?DBG([[JSONlist]]),
     {[JSONlist], Req, State}.
 
-
-
 suites_as_json()-> 
     FindSuitesCmd = application:get_env(web_server,suites,[]),
     FilesString = os:cmd(FindSuitesCmd),
     Files= string:tokens(FilesString,"\n"),
     ?DBG(Files),
     SuitesRecords = suites_paths_to_records(Files),
+    ets:insert(jtc_suites_db,SuitesRecords),
+    ?DBG(ets:tab2list(jtc_suites_db)),
     SuitesJsxList = suites_records_to_jsx(SuitesRecords),
     ?DBG(SuitesJsxList),     
     SuitesJSON = jsx:encode(SuitesJsxList), 
- ?DBG(SuitesJSON),
- <<"{\"data\" : ",SuitesJSON/bitstring,"}">>.
-
+    ?DBG(SuitesJSON),
+    <<"{\"data\" : ",SuitesJSON/bitstring,"}">>.
 
 
 suites_paths_to_records(Files)->
@@ -50,41 +49,39 @@ suites_paths_to_records([], Acc) ->
 suites_paths_to_records([H|Files], Acc) ->
     Record = 
 	#suites{file=filename:basename(H, ".erl"),
-		path=H,
-		active=false},
+		path=list_to_bitstring(H),
+		active=false,
+		update_time = filelib:last_modified(H)},
+    ?DBG(Record#suites.update_time),    
     suites_paths_to_records(Files, [Record|Acc]).
 
-suites_records_to_jsx(List)->
-    RecordList=record_info(fields,suites),
-    ?DBG(["suites_to_json ",RecordList]),
-    ListWithBinValues  = jsx_values_in_suites_records(List),
-    records_to_jsx(RecordList,ListWithBinValues ).
+suites_records_to_jsx(Files)->
+    suites_records_to_jsx(Files, []).
 
+suites_records_to_jsx([H|List], Acc)->
+   SuiteJsx =   
+	[
+	 {<<"file">>,list_to_bitstring(H#suites.file)},
+	 {<<"path">>,H#suites.path},
+	 {<<"active">>,H#suites.active}
+	],
+    suites_records_to_jsx(List,[SuiteJsx|Acc]);
+suites_records_to_jsx([],Acc) ->
+   Acc.
 
-jsx_values_in_suites_records(SuitesRecords) ->
-   jsx_values_in_suites_records(SuitesRecords,[]).
-jsx_values_in_suites_records([], Acc) ->
-    Acc;
-jsx_values_in_suites_records([H|SuitesRecords], Acc) ->
-    Record = 
-	#suites{file=list_to_binary(H#suites.file),
-		path=re:replace(H#suites.path,"/","%2F",[global, {return,binary}]),
-		active=H#suites.active},
-    jsx_values_in_suites_records(SuitesRecords,[Record|Acc]).
+%%% head and tail recursion I need to decide which is better, It would be good to test it
 
+%%suites_records_to_jsx([H|List])->
+%%    SuiteJsx =   
+%%	[
+%%	 {<<"file">>,list_to_binary(H#suites.file)},
+%%	 {<<"path">>,re:replace(H#suites.path,"/","%2F",[global, {return,binary}])},
+%%	 {<<"active">>,H#suites.active}
+%%	],
+%%    [SuiteJsx|suites_records_to_jsx(List)];
+%%suites_records_to_jsx([]) ->
+%%    [].
 
-records_to_jsx(RecordList,List) ->
-    records_to_jsx(RecordList,List,[]).
-records_to_jsx(_RecordList,[],Acc)->
-	Acc;
-records_to_jsx(RecordList,[Head|Tail],Acc)->
-	?DBG(["records_to_json ",Head]),	
-	[_|Values] = tuple_to_list(Head),
-	?DBG(["records_to_json ",Values]),
-	Translated=lists:zipwith(
-		fun(X,Y)->{list_to_binary(atom_to_list(X)),Y} end, 
-				RecordList, Values),
-	[Translated|records_to_jsx(RecordList,Tail,Acc)].
 
 
 
