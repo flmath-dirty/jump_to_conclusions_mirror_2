@@ -1,7 +1,10 @@
 PROJ_NAME =   -sname jtc
 DEPS = ranch cowlib cowboy jsx
 
-ERLC = erlc
+# debug info added for edts nodes to function
+# debug macro also included in file, to activate run
+# make ERLC='erlc +debug_info -DTEST' web_server
+export ERLC = erlc +debug_info
 
 ERL_CALL = erl_call
 EC_SERV = $(ERL_CALL)  $(PROJ_NAME) 
@@ -67,6 +70,9 @@ stop	:
 	$(EC_SERV)  -a 'init stop []' -c .erlang.cookie -s
 kill_node	:
 	ps aux | grep jtc | grep -v grep | head -n 1 \
+	| awk '{print $$2}' | xargs -r kill
+kill_edts	:
+	ps aux | grep edts_conclusions | grep -v grep | head -n 1 \
 	| awk '{print $$2}' | xargs -r kill
 script	: kill_node
 #	epmd -kill

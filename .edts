@@ -1,0 +1,5 @@
+:name "edts_conclusions"
+:node-sname "edts_conclusions"
+:lib-dirs '("lib" "deps" "deps/cowboy" "deps/cowlib" "deps/ranch" "deps/jsx")
+:app-include-dirs '("deps/cowlib/include")
+:project-include-dirs '("deps")
