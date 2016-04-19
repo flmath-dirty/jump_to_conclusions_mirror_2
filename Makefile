@@ -64,7 +64,7 @@ clean	:
 	rm -rf $(COWBOY_ROOT)/ebin/*beam
 	rm -rf $(JSX_ROOT)/ebin/*beam
 	rm -rf ebin/*
-	rm -f web_server.script web_server.boot
+	rm -f web_server.script web_server.boot web_server.rel
 
 stop	:
 	$(EC_SERV)  -a 'init stop []' -c .erlang.cookie -s
@@ -74,9 +74,12 @@ kill_node	:
 kill_edts	:
 	ps aux | grep edts_conclusions | grep -v grep | head -n 1 \
 	| awk '{print $$2}' | xargs -r kill
-script	: kill_node
+script		:
+	./make_script 
+# kill_node
 #	epmd -kill
-	$(ERL_SERV) -setcookie .erlang.cookie  -run systools make_script "web_server" 
+#	$(ERL_SERV) -setcookie .erlang.cookie  -run systools make_script "web_server" 
+
 
 start	:
 	$(ERL) $(ALL_PATHS) -boot web_server -config sys

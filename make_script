@@ -1,0 +1,35 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -smp enable -sname mk_script -mnesia debug verbose  -pa deps/jsx/ebin -pa deps/cowlib/ebin -pa deps/ranch/ebin -pa deps/cowboy/ebin -pa ebin -I deps/cowboy/include
+main(_) ->
+make_rel_file(),
+systools:make_script("web_server").
+
+
+make_rel_file() ->
+	application:load(cowlib),
+	application:load(ranch),
+	application:load(cowboy),
+	application:load(jsx),
+	application:load(web_server),
+	application:load(crypto),
+	application:load(sasl),	
+	ErtsVer = erlang:system_info(version),
+	LoadedApps = application:loaded_applications(),
+	AppProplist = convert_to_proplist(LoadedApps),
+	{_, AppVer} = proplists:lookup(web_server,AppProplist),
+	Printout = 
+		{release, {"web_server", AppVer},
+		  {erts, ErtsVer},
+		  AppProplist},
+	file:delete("./web_server.rel"),	  
+	file:write_file("./web_server.rel", io_lib:fwrite("~p.~n", [Printout])).
+
+convert_to_proplist(LoadedApps) ->
+	convert_to_proplist(LoadedApps, []).
+convert_to_proplist([H|LoadedApps], Acc) ->
+	{Name,_,Version} = H,
+	convert_to_proplist(LoadedApps, [{Name,Version}|Acc]);
+convert_to_proplist([], Acc) ->
+	Acc. 
+	
