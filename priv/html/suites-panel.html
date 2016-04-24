@@ -1,0 +1,5 @@
+<ul>
+  <li ng-repeat="suite in suites.data" ng-click="sPanel.toggleActive(suite)" ng-class="{active:sPanel.isActive(suite)}">
+    {{suite.file}}
+  </li> 
+</ul>
