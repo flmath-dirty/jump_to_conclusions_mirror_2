@@ -52,7 +52,6 @@ from_json(Req, State) ->
 	    ListOfTcRecords = testcase_db_update(ListOfSuitesPathes),
 	    ?DBG(ets:tab2list(jtc_tc_db)),
 	    PreJsonList = tc_records_to_jsx(ListOfTcRecords),
-	    ?DBG(PreJsonList),
 	    TcJson = jsx:encode(PreJsonList),
 	    ?DBG(TcJson),
 	    Response = <<"{\"data\" : ",TcJson/bitstring,"}">>,
@@ -81,14 +80,14 @@ testcase_db_update([H|SelectedSuites], Acc) ->
 	    [] -> 
 		error_logger:info_msg(
 		  "No info about ~p: compiling~n", [H]),
-		compile_suite(StringPath);
+		compile_suite_and_retrive_tc(StringPath);
 	    List -> 
 		case UpdTime == SuiteRecord#suites.update_time of
 		    true -> List;
 		    false -> 
 			error_logger:info_msg(
 			  "File ~p updated: recompiling~n", [H]),
-			CS = compile_suite(StringPath),
+			CS = compile_suite_and_retrive_tc(StringPath),
 			ets:insert(jtc_suites_db,SuiteRecord#suites{update_time = UpdTime}),
 			CS
 		end
@@ -124,7 +123,7 @@ selected_suites_to_path_list([H|JsonListSelectedSuites], Acc)->
 selected_suites_to_path_list([],Acc)->
     Acc.
 
-compile_suite(Path)->
+compile_suite_and_retrive_tc(Path)->
     BaseName = filename:rootname(filename:basename(Path)),
     BeamDir = application:get_env(web_server,tmp_dir,[]),	
     code:purge(list_to_atom(BaseName)),
@@ -132,10 +131,11 @@ compile_suite(Path)->
     code:load_abs(filename:join(BeamDir,BaseName)),
     Module = list_to_atom(BaseName),
     PathBitstring = list_to_bitstring(Path),
-    TcRecords = [#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- Module:all()],
+    TcRecords = get_all_tc_from_beam(PathBitstring, Module),
     TcRecords.
 
-
+get_all_tc_from_beam(PathBitstring, Module) ->
+    [#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- Module:all()].
 
 
 
