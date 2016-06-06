@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 26 Apr 2016 by math <math@>
 %%%-------------------------------------------------------------------
--module(groups_adv_SUITE).
+-module(groups_pathes_SUITE).
 
 %% Note: This directive should only be used in test suites.
 -compile(export_all).
@@ -164,11 +164,10 @@ end_per_testcase(_TestCase, _Config) ->
 %%--------------------------------------------------------------------
 groups() ->
     [
-     {gr1,[],[my_test_case_1]},
-     {gr21,[some_option_1],[{gr22,[some_option_2],[my_test_case_2, my_test_case_1]}]},
-     {gr12,[],[my_test_case_5, my_test_case_6]},
-     {gr32,[],[my_test_case_3, {group, gr24}]},
-     {gr24,[],[my_test_case_2, my_test_case_4]}
+     {gr1,[some_option_1],[my_test_case_1,{group, gr3},{group, gr2}]},
+     {gr2,[],[my_test_case_2,{group, gr3}]},
+     {gr3,[],[my_test_case_3,{group, gr4}]},
+     {gr4,[],[my_test_case_4]}
     ].
 
 %%--------------------------------------------------------------------
@@ -188,13 +187,9 @@ groups() ->
 %% @end
 %%--------------------------------------------------------------------
 all() -> 
-    [my_test_case_1,%%testcase
-     {group, gr1}, %% reference to simple group
-     {gr2,[some_option],[my_test_case_3, my_test_case_4]},%% inline group
-     {group, gr21},%% reference with group with inline group inside
-     {gr3,[],[my_test_case_2, {group,gr12}]},%% inline group with tc and gr reference inside
-     {group,gr32}%% group with tc and reference to group
-].
+    [my_test_case_5,%%testcase
+     {group, gr1} %% reference to simple group
+    ].
  
 
 %%--------------------------------------------------------------------

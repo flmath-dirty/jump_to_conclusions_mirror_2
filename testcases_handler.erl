@@ -12,11 +12,8 @@
 
 %-define(TEST,1).
 -ifdef(TEST).
--include_lib("eunit/include/eunit.hrl").
--compile([export_all]).
 -define(DBG(Message),io:format("Module: ~p, Line:~p, :~p~n",[?MODULE ,?LINE, Message])).
 -else.
--define(NOTEST, 1).
 -define(DBG(Message),true).
 -endif.
 
@@ -142,30 +139,107 @@ get_all_tc_from_beam(PathBitstring, Module) ->
 		 List -> List
 	     catch
 		 _EClass:_Error -> 
-		     error_logger:info_msg(
-		       "Group function not found in ~p ~p ~p~n", [Module, _EClass,_Error]),
+		     ?DBG([_EClass,_Error]),
 		     []
 	     end,
     All = Module:all(),
-    AllWithGroups =  suite_info_parsing:make_all_flat(All,Groups),
-    AllGroup = proplists:get_value('$no_group',AllWithGroups),
-    AllClean = clean_tc(AllGroup),
-   %% All = Module:all(),
-   
-    %%    list_of_tc_records(All, Groups).
-    [#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- AllClean].
+    list_of_tc_records(All, Groups).
+    %%[#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- Module:all()].
+
+
+list_of_tc_records(All, Groups)->
+    PropListGroups = groups_to_proplist(Groups),
+    list_of_tc_records(All, PropListGroups,Path,TcListAcc).
+%%[#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- All];
 
 
 
+expand_groups(Groups)->
+    PropListGroups = groups_to_proplist(Groups),
+    expand_groups(PropListGroups, [], [], []).
 
-clean_tc( AllGroup)->
-    clean_tc( AllGroup,[]).
+expand_groups([H|PropListGroups], ExpandedGroups) ->
+    {PropListGroups, ExpandedGroupUpd} = expand_group_to_tcs(H, PropListGroups, ExpandedGroups, [], [],[]),
+    expand_groups(PropListGroups, ExpandedGroupUpd);
+expand_groups([], ExpandedGroups) ->
+    ExpandedGroups.
 
+expand_group_to_tcs(
+  {GroupName,GroupsAndTcs}=InvestigatedGroup, PropListGroups, ExpandedGroups,
+  CurrentPath, TcStack, GroupStack) ->
+    {Tcs, Groups} = separate_groups_from_tc(GroupsAndTcs),
+    FullTcs = absolute_path_tc(CurrentPath, Tcs),
+    case lists:member(GroupName,PropListGroups) of 
+	false ->
+	    error_logger:error_msg(
+	      "Group dependecy cycle: ~p ~n", [PropListGroups]),
+	    nok;
+	true ->
+	    expand_group_to_tcs([], PropListGroups, ExpandedGroups,  
+				[GroupName|CurrentPath], lists:append(FullTcs,TcStack), GroupStack) 
+    end;
+expand_group_to_tcs(
+  [], PropListGroups, ExpandedGroups,  
+  CurrentPath, TcStack, [H|GroupStack]) when is_atom(H)->
+    
+    FullTcs = absolute_path_tc(CurrentPath, [H]),
+    expand_group_to_tcs([], PropListGroups, ExpandedGroups,  
+			CurrentPath, lists:append(FullTcs,TcStack), GroupStack);
+expand_group_to_tcs(
+  [], PropListGroups, ExpandedGroups,  
+  CurrentPath, TcStack, [{group,List}|GroupStack]) ->
+    ?DBG(["Group reference ~n"]),
+    ?DBG([{group,List}]),
+    NotExpandedGroup = proplists:lookup(List,PropListGroups),
+    ExpandedGroup = proplists:lookup(List,ExpandedGroups),
+    case {NotExpandedGroup, ExpandedGroup} of
+	{none, {GroupName, GroupList}} -> 
+	    UpdTcs = update_path_tc([GroupName|CurrentPath],GroupList ),
+	    expand_group_to_tcs([], PropListGroups, ExpandedGroups,  
+				CurrentPath, lists:append(UpdTcs,TcStack), GroupStack);
+	{{GroupName, GroupList}, none} -> 
+	    UpdPropListGroups = proplists:delete(GroupName,PropListGroups),
+	    expand_group_to_tcs(NotExpandedGroup, UpdPropListGroups, ExpandedGroups,  
+				CurrentPath, TcStack, GroupStack)
+	    
+update_path_tc(Path,List)->
+    update_path_tc(Path,List,[]).
 
-clean_tc( [{_Path,TcName}|AllGroup],Acc)->
-    clean_tc( AllGroup,[TcName|Acc]);
-clean_tc([],Acc) ->
+update_path_tc(Path,[{TcPath,TcName}|List],Acc)->
+    update_path_tc(Path,List,[{{lists:append(Path,TcPath),TcName}}|Acc]);
+update_path_tc(_,[],Acc) ->
     Acc.
+
+
+absolute_path_tc(CurrentPath, Tcs) ->
+    absolute_path_tc(CurrentPath, Tcs,[]).
+
+absolute_path_tc(CurrentPath, [H|Tcs],Acc)->
+    absolute_path_tc(CurrentPath, Tcs,[{CurrentPath, Tcs} | Acc]);
+absolute_path_tc(_,[],Acc) ->
+    Acc.
+
+separate_groups_from_tc(GroupsAndTcs)->
+    separate_groups_from_tc(GroupsAndTcs, [], []).
+
+separate_groups_from_tc([{group,Group}|Tail], Tcs, Groups)->
+    separate_groups_from_tc(Tail, Tcs, [{group,Group}|Groups]);
+separate_groups_from_tc([{InlineGroup, List}|Tail], Tcs, Groups)->
+    separate_groups_from_tc(Tail, Tcs, [{InlineGroup, List}|Groups]);
+separate_groups_from_tc([Tc|Tail], Tcs, Groups) when is_atom(Tc) ->
+    separate_groups_from_tc(Tail, [Tc|Tcs], Groups);
+separate_groups_from_tc([],Tcs, Groups) ->
+    {Tcs, Groups}.
+
+
+groups_to_proplist(Groups) ->   
+    groups_to_proplist(Groups, []).
+groups_to_proplist([{Key,_,Value}|Groups], Acc) ->
+    groups_to_proplist(Groups,[{Key,Value}|Acc]);
+groups_to_proplist([], Acc) ->
+    Acc.
+
+
 
 
 
