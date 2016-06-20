@@ -1,36 +1,85 @@
 <!DOCTYPE html>
 <html >
   <head>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
     <link href="style.css" rel="stylesheet"/>
-  </head>
-  
-  <body ng-app="myApp">
-    <header>
-      <h2>Don't jump to conclusions</h2>
-    </header>
-    <nav>
-      
-      <form >
-	<suites-panel></suites-panel>
-      </form>
-    </nav>
-    <nav2>
-      
-      <form>
-	<testcase-panel></testcase-panel>
-      </form>
-      
-    </nav2>
 
-    <nav3>
-      <form>
-	<button class="button my_button" ng-click="tcPanel.run_testcases()">RUN</button>
-      </form>
-    </nav3>
-    
-    <script src="js/share/angular.min.js"></script>
+    <script src="js/share/jquery.min.js"></script>	
+    <script src="js/share/angular.min.js"></script> 
+    <script src="js/share/bootstrap.min.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/controllers/suites.js"></script>
+    <script src="js/controllers/suites.js"></script>   
+    <script src="js/carousel.js"></script>
+
+    <title>Don't jump to conclusions</title>
+  </head>
+  <body ng-app="myApp">
+    <div id="main_container" class="container-fluid">
+
+      <div id="myCarousel" class="carousel slide" data-ride="carousel">
+	<div id="nav_menu" class="row">
+	  <div class="col-lg-12">
+            <ul class="nav nav-pills nav-justified">
+              <li data-target="#myCarousel" data-slide-to="0" class="active">
+		<a href="#">SUITES/TESTCASE</a></li>
+              <li data-target="#myCarousel" data-slide-to="1">
+		<a href="#">TESTCASES SWAP</a></li>
+            </ul>
+	  </div> 
+	</div><!--row-->
+
+	<div id="carousel_body" class="row">
+	  <div class="col-lg-12">
+	    <!-- Wrapper for slides -->
+	    <div class="carousel-inner" role="listbox">  
+              <div class="item active">
+		<div id="suite_menu" class="container-fluid">
+
+		  <div class="col-lg-4">
+		    <nav class="list-group">
+		      <suites-panel></suites-panel>
+		    </nav> 
+		  </div>
+		  
+		  <div class="col-lg-8" > 
+		    <nav class="list-group">
+		      <testcase-panel></testcase-panel>
+		    </nav>
+		  </div>
+		</div>
+              </div><!-- End Item -->
+
+	      <div class="item">
+		<div id="swap_menu" class="container-fluid">
+
+		  <div class="col-lg-4">
+		    <nav class="list-group">
+		      <suites-panel></suites-panel>
+		    </nav> 
+		  </div>
+		  
+		  <div class="col-lg-8" > 
+		    <nav class="list-group">
+		      <testcase-panel></testcase-panel>
+		    </nav>
+		  </div>
+		</div>
+		
+              </div><!-- End Item -->         
+	    </div><!-- End Carousel Inner -->
+
+	    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+	      <span class="sr-only">Previous</span>
+	    </a>
+	    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+	      <span class="sr-only">Next</span>
+	    </a>
+	  </div> 
+	</div><!--row-->
+
+
+      </div>
+
+
   </body>
-  
 </html>

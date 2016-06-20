@@ -1,70 +1,96 @@
-html, body {
-    width: 100%;
+html, body, #main_container {
     height:100%;
+    width: 100%;
+    overflow-y: hidden;
 }
 
-header {
-    background-color:white;
-    color:teal;
-    text-align:center;
-    padding:5px;	 
+
+#nav_menu
+{
+    height:5%;
+    width: 100%;
 }
-nav {
-    background-color:white;
-    height:80%;
-    width:40%;
-    float:left; 
-}
-nav2 {
-    background-color:white;
-    height:80%;
-    width:40%;
-    float:left;      
-}
-nav3 {
-    background-color:white;
-    height:80%;
-    width:20%;
-    float:left;      
+#carousel_body
+{
+    height:95%;
+    width: 100%;
 }
 
-.my_button {
-    background-color:white;
-    height:80%;
-    width:20%;
-    float:left;      
+#carousel_body > [class*="col-"]
+{
+    height:100%;
+    width: 100%;
+    background:#fff;
 }
 
-form ul{
-        background-color:white;
-	list-style:none;
-	color:black;
-	font-size:16px;
-	text-align: left;
-	margin:5px 0 5px;
+#myCarousel
+{
+    height:100%;
+    width: 100%;
+}
+#nav_menu .nav { 
+    height:100%;
+    width: 100%;
+    background:#eee;
+}
+#nav_menu .nav a {
+    width: 100%;
+    border-radius:0px;
 }
 
-form ul li{
-	padding:0px 0px;
-	background-color:white;
-	margin-bottom:8px;
-	box-shadow:0 1px 1px rgba(0,0,0,0.1);
-	cursor:pointer;
+#carousel_body {
+    height: 100%;
 }
 
-form ul li span{
-	float:right;
+#carousel_body .carousel-inner {
+    margin-left: 3%;
+    width: 94%;
+    height: 100%;
+    background-color: #fff;
+    border-radius:0px;
+    
 }
 
-form ul li.active{
-	background-color:teal;
+#carousel_body .left
+{
+    width: 3%;
+    height: 100%;
+}
+#carousel_body .right
+{
+    width: 3%;
+    height: 100%;
 }
 
-div.total{
-	border-top:1px solid rgba(255,255,255,0.5);
-	padding:1px 0px;
-	font-size:14px;
-	text-align: left;
-	color:#fff;
+#myCarousel > .row  {
+    width: 100%;   
+    background-color: #fff;
+   
 }
 
+.item
+{
+    height:100%;
+    width: 100%;    
+
+}
+
+#suite_menu {
+    height:100%;
+    width: 100%;    
+
+}
+
+#suite_menu [class*="col-"]
+{
+    height: 100%;
+    
+
+}
+#suite_menu [class*="col-"] .list-group {
+    height: 93%;
+    width: 100%;    
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius:0px;
+}
