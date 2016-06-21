@@ -8,7 +8,8 @@
     <script src="js/share/angular.min.js"></script> 
     <script src="js/share/bootstrap.min.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/controllers/suites.js"></script>   
+    <script src="js/controllers/suites.js"></script> 
+    <script src="js/directives/panels.js"></script> 
     <script src="js/carousel.js"></script>
 
     <title>Don't jump to conclusions</title>
@@ -33,20 +34,7 @@
 	    <!-- Wrapper for slides -->
 	    <div class="carousel-inner" role="listbox">  
               <div class="item active">
-		<div id="suite_menu" class="container-fluid">
-
-		  <div class="col-lg-4">
-		    <nav class="list-group">
-		      <suites-panel></suites-panel>
-		    </nav> 
-		  </div>
-		  
-		  <div class="col-lg-8" > 
-		    <nav class="list-group">
-		      <testcase-panel></testcase-panel>
-		    </nav>
-		  </div>
-		</div>
+		<suite-testcase-panel></suite-testcase-panel>
               </div><!-- End Item -->
 
 	      <div class="item">
