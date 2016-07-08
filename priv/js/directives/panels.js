@@ -21,3 +21,13 @@ app.directive('suiteTestcasePanel',function(){
 	templateUrl: 'html/suite-testcase-panel.html'
     };
 })
+
+
+app.directive('swapPanel',function(){
+    return{
+	restrict: 'E',
+	controller: 'SwapPanel',
+	controllerAs: 'swapPanel',
+	templateUrl: 'html/swap-panel.html'
+    };
+})

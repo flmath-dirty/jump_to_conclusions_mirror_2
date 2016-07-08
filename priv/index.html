@@ -14,16 +14,17 @@
 
     <title>Don't jump to conclusions</title>
   </head>
-  <body ng-app="myApp">
+  <body ng-app="myApp" class="full_width">
     <div id="main_container" class="container-fluid">
 
       <div id="myCarousel" class="carousel slide" data-ride="carousel">
 	<div id="nav_menu" class="row">
-	  <div class="col-lg-12">
-            <ul class="nav nav-pills nav-justified">
-              <li data-target="#myCarousel" data-slide-to="0" class="active">
+	  <div class="col-lg-12" class="full_width">
+            <!-- <ul class="nav nav-pills nav-justified"> -->  
+	    <ul class="nav nav-pills nav-justified" class="full_width"> 
+              <li data-target="#myCarousel" class="active" data-slide-to="0" class="full_width" >
 		<a href="#">SUITES/TESTCASE</a></li>
-              <li data-target="#myCarousel" data-slide-to="1">
+              <li data-target="#myCarousel" data-slide-to="1" class="full_width">
 		<a href="#">TESTCASES SWAP</a></li>
             </ul>
 	  </div> 
@@ -38,21 +39,7 @@
               </div><!-- End Item -->
 
 	      <div class="item">
-		<div id="swap_menu" class="container-fluid">
-
-		  <div class="col-lg-4">
-		    <nav class="list-group">
-		      <suites-panel></suites-panel>
-		    </nav> 
-		  </div>
-		  
-		  <div class="col-lg-8" > 
-		    <nav class="list-group">
-		      <testcase-panel></testcase-panel>
-		    </nav>
-		  </div>
-		</div>
-		
+		<swap-panel></swap-panel>
               </div><!-- End Item -->         
 	    </div><!-- End Carousel Inner -->
 

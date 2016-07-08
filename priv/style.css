@@ -1,9 +1,21 @@
-html, body, #main_container {
+html{
+    height:100%;
+    width: 102%;
+    overflow-y: hidden;
+
+}
+
+body, #main_container {
     height:100%;
     width: 100%;
     overflow-y: hidden;
+
 }
 
+.full_width
+{ 
+    width: 100%;
+}
 
 #nav_menu
 {
@@ -31,34 +43,42 @@ html, body, #main_container {
 #nav_menu .nav { 
     height:100%;
     width: 100%;
-    background:#eee;
+    background:#fff;
+    border-radius:0px;
 }
 #nav_menu .nav a {
     width: 100%;
     border-radius:0px;
 }
 
-#carousel_body {
-    height: 100%;
+#nav_menu .nav .active a:hover {
+    width: 100%;
+    background-color:#337ab7;
+    border-color:#2e6da4
+    color:black;
+    border-radius:0px;
 }
 
+#nav_menu .nav a:hover {
+    width: 100%;
+    background:aqua;
+    color:black;
+    border-radius:0px;
+}
+
+
+
 #carousel_body .carousel-inner {
-    margin-left: 3%;
-    width: 94%;
+    margin-left: 4%;
+    width: 91%;
     height: 100%;
     background-color: #fff;
     border-radius:0px;
-    
 }
 
-#carousel_body .left
+#carousel_body .left, #carousel_body .right
 {
-    width: 3%;
-    height: 100%;
-}
-#carousel_body .right
-{
-    width: 3%;
+    width: 5%;
     height: 100%;
 }
 
@@ -68,24 +88,43 @@ html, body, #main_container {
    
 }
 
-.item
+
+.carousel-control.left
 {
+    background-image: linear-gradient(to left,white, #337ab7);
+    opacity: 0.2;
+    filter: 20%;
+}
+.carousel-control.right
+{
+    background-image: linear-gradient(to right,white,#337ab7);
+    opacity: 0.2;
+    filter: 20%;
+}
+.carousel-control.left:hover {
+    background-image: linear-gradient(to left,white,aqua);
+    opacity: 0.4;
+    filter: 40%;
+}
+
+.carousel-control.right:hover {
+    background-image: linear-gradient(to right,white,aqua);
+    opacity: 0.4;
+    filter: 40%;
+}
+
+.item {
     height:100%;
     width: 100%;    
-
 }
 
 #suite_menu {
     height:100%;
     width: 100%;    
-
 }
 
-#suite_menu [class*="col-"]
-{
+#suite_menu [class*="col-"] {
     height: 100%;
-    
-
 }
 #suite_menu [class*="col-"] .list-group {
     height: 93%;
@@ -93,4 +132,46 @@ html, body, #main_container {
     overflow-y: auto;
     background-color: #fff;
     border-radius:0px;
+}
+
+li.list-group-item:hover {
+    width: 100%;
+    background:aqua;
+    color:black;
+    border-radius:0px;
+}
+li.list-group-item:hover[class*="active"] {
+    width: 100%;
+    background-color:#337ab7;
+    border-color:#2e6da4;
+    color:black;
+    border-radius:0px;
+}
+
+li.list-group-item[class*="swapActive"] {
+    width: 100%;
+    background-color:#337ab7;
+    border-color:#2e6da4;
+    color:black;
+    border-radius:0px;
+}
+
+li.list-group-item:hover[class*="swapActive"] {
+    width: 100%;
+    background-color:#337ab7;
+    border-color:#2e6da4;
+    color:black;
+    border-radius:0px;
+}
+
+
+
+#swap_in {
+    width: 100%;    
+}
+#swap_out {
+    width: 100%;    
+}
+#swap_both {
+    width: 100%;    
 }
