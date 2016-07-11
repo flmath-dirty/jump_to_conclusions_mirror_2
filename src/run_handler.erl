@@ -12,7 +12,7 @@
 
 -export([execute/1]).
 
-%%-define(TEST,1).
+%-define(TEST,1).
 -ifdef(TEST).
 -define(DBG(Message),io:format("Module: ~p, Line:~p, :~p~n",[?MODULE ,?LINE, Message])).
 -else.
@@ -64,38 +64,52 @@ from_json(Req, State) ->
     end.
 execute([]) -> [];
 execute([ExecutionString|Tail]) ->
-		CT_RUN = application:get_env(web_server,cmd_ct_run,[]),
-		?DBG(CT_RUN ++ ExecutionString),
-		Port = erlang:open_port({spawn,CT_RUN ++ ExecutionString},
-		[stderr_to_stdout,in,binary,exit_status,stream,{line,255}]),
-		execution_loop(Port,Tail).
+    CT_RUN = application:get_env(web_server,cmd_ct_run,[]),
+    ?DBG(CT_RUN ++ ExecutionString),
+    Port = erlang:open_port({spawn,CT_RUN ++ ExecutionString},
+			    [stderr_to_stdout,in,binary,exit_status,stream,{line,255}]),
+    execution_loop(Port,Tail).
 execution_loop(Port,Tail) ->
-		receive 
-		{Port, {exit_status,_Status}} ->
-		?DBG("End of suite"),
-		execute(Tail);
-		{Port,_Data}->
-		?DBG(_Data),
-		execution_loop(Port,Tail)
-		end.
+    receive 
+	{Port, {exit_status,_Status}} ->
+	    ?DBG("End of suite"),
+	    execute(Tail);
+	{Port,_Data}->
+	    ?DBG(_Data),
+	    execution_loop(Port,Tail)
+    end.
 
 list_of_tc_to_exe_string(ListOfTc) ->
-	Suites = proplists:get_keys(ListOfTc),
-	lists:foldl(fun(Suite,AccSuite) ->
-		 CasesStr = lists:foldl(fun(X,Acc)->
-		 	 " " ++ X ++Acc
-			 end,[],
-			 proplists:get_all_values(Suite,ListOfTc)),
-	 [" -suite " ++ Suite ++" -case" ++ CasesStr | AccSuite] end,[], Suites).
-	 
+    Suites = proplists:get_keys(ListOfTc),  
+    ?DBG(Suites),
+    lists:foldl(fun(Suite,AccSuite) ->
+			CasesStr = 
+			    lists:foldl(fun(X,Acc)->" " ++ X ++Acc end,
+					[],
+					proplists:get_all_values(Suite,ListOfTc)),
+			SuiteToLoad = load_suite_path(Suite),
+			[" -suite " ++ SuiteToLoad ++" -case" ++ CasesStr | AccSuite] end,
+		[], 
+		Suites).
+
 
 selected_tc_to_list(JsonListSelectedTc)->
-	lists:foldl(fun(X, Acc)->	
-	   BinaryEncodedPath = proplists:get_value(<<"path">>,X),
-	   UrlStringPath = binary_to_list(BinaryEncodedPath),
-	   ListPath =re:split(UrlStringPath,"%2F",[{return,list}]),
-	   StringSuite = lists:last(ListPath),
-	   BinaryEncodedTc = proplists:get_value(<<"tc">>,X),
-	   StringTc = binary_to_list(BinaryEncodedTc),
-	   [{StringSuite,StringTc} |Acc] end,[], JsonListSelectedTc).
+    lists:foldl(fun(X, Acc)->	
+			BinaryEncodedPath = proplists:get_value(<<"path">>,X),
+			UrlStringPath = binary_to_list(BinaryEncodedPath),
+			ListPath =re:split(UrlStringPath,"%2F",[{return,list}]),
+			StringSuite = lists:last(ListPath),
+			BinaryEncodedTc = proplists:get_value(<<"tc">>,X),
+			StringTc = binary_to_list(BinaryEncodedTc),
+			[{StringSuite,StringTc}|Acc] end,[], JsonListSelectedTc).
 
+load_suite_path(Suite) ->
+    case application:get_env(web_server,use_tmp_beams,false) of
+	false ->  Suite;
+	true -> 
+	    BeamDir = application:get_env(web_server,tmp_dir,[]),
+	    SuiteName = filename:rootname(filename:basename(Suite)),
+	    ?DBG(SuiteName),
+	    filename:join(BeamDir,SuiteName)
+
+    end.

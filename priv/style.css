@@ -2,14 +2,13 @@ html{
     height:100%;
     width: 102%;
     overflow-y: hidden;
-
+    overflow-x: hidden;
 }
 
 body, #main_container {
     height:100%;
     width: 100%;
     overflow-y: hidden;
-
 }
 
 .full_width
@@ -17,14 +16,20 @@ body, #main_container {
     width: 100%;
 }
 
-#nav_menu
+#nav_menu, #tools_menu
 {
     height:5%;
     width: 100%;
+    text-align: center;
 }
+
+#btn-run {
+    width: 90%; 
+}
+
 #carousel_body
 {
-    height:95%;
+    height:90%;
     width: 100%;
 }
 
@@ -34,7 +39,6 @@ body, #main_container {
     width: 100%;
     background:#fff;
 }
-
 #myCarousel
 {
     height:100%;
@@ -50,7 +54,6 @@ body, #main_container {
     width: 100%;
     border-radius:0px;
 }
-
 #nav_menu .nav .active a:hover {
     width: 100%;
     background-color:#337ab7;
@@ -66,8 +69,6 @@ body, #main_container {
     border-radius:0px;
 }
 
-
-
 #carousel_body .carousel-inner {
     margin-left: 4%;
     width: 91%;
@@ -81,13 +82,11 @@ body, #main_container {
     width: 5%;
     height: 100%;
 }
-
 #myCarousel > .row  {
     width: 100%;   
     background-color: #fff;
    
 }
-
 
 .carousel-control.left
 {
@@ -106,34 +105,30 @@ body, #main_container {
     opacity: 0.4;
     filter: 40%;
 }
-
 .carousel-control.right:hover {
     background-image: linear-gradient(to right,white,aqua);
     opacity: 0.4;
     filter: 40%;
 }
-
 .item {
     height:100%;
     width: 100%;    
 }
-
-#suite_menu {
+#suite_menu, #swap_menu {
     height:100%;
     width: 100%;    
 }
 
-#suite_menu [class*="col-"] {
+#suite_menu [class*="col-"], #swap_menu [class*="col-"] {
     height: 100%;
 }
-#suite_menu [class*="col-"] .list-group {
+#suite_menu [class*="col-"] .list-group, #swap_menu [class*="col-"] .list-group {
     height: 93%;
     width: 100%;    
     overflow-y: auto;
     background-color: #fff;
     border-radius:0px;
 }
-
 li.list-group-item:hover {
     width: 100%;
     background:aqua;
@@ -147,7 +142,6 @@ li.list-group-item:hover[class*="active"] {
     color:black;
     border-radius:0px;
 }
-
 li.list-group-item[class*="swapActive"] {
     width: 100%;
     background-color:#337ab7;
@@ -155,7 +149,6 @@ li.list-group-item[class*="swapActive"] {
     color:black;
     border-radius:0px;
 }
-
 li.list-group-item:hover[class*="swapActive"] {
     width: 100%;
     background-color:#337ab7;
@@ -175,3 +168,5 @@ li.list-group-item:hover[class*="swapActive"] {
 #swap_both {
     width: 100%;    
 }
+
+

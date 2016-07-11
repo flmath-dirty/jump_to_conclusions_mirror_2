@@ -10,7 +10,7 @@
 -export([from_json/2]).
 -include("message_templates.hrl").
 
-%-define(TEST,1).
+%%-define(TEST,1).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -compile([export_all]).
@@ -138,22 +138,33 @@ compile_suite_and_retrive_tc(Path)->
     TcRecords.
 
 get_all_tc_from_beam(PathBitstring, Module) ->
-    Groups = try Module:groups() of
-		 List -> List
-	     catch
-		 _EClass:_Error -> 
-		     error_logger:info_msg(
-		       "Group function not found in ~p ~p ~p~n", [Module, _EClass,_Error]),
-		     []
-	     end,
-    All = Module:all(),
-    AllWithGroups =  suite_info_parsing:make_all_flat(All,Groups),
+    Groups = 
+	try Module:groups() of
+	    List -> List
+	catch
+	    _EClass:_Error -> 
+		error_logger:info_msg(
+		  "Group function not found in ~p ~p ~p~n", [Module, _EClass,_Error]),
+		[]
+	end,
+    All = 
+	try Module:all() of
+	    List2 -> List2
+	catch
+	    _EClass2:_Error2 -> 
+		error_logger:error_msg(
+		  "All function not found in ~p ~p ~p~n", [Module, _EClass2,_Error2]),
+		[]
+	end,
+
+    AllWithGroups = suite_info_parsing:make_all_flat(All,Groups),
     AllGroup = proplists:get_value('$no_group',AllWithGroups),
     AllClean = clean_tc(AllGroup),
-   %% All = Module:all(),
-   
+    %% All = Module:all(),
+
     %%    list_of_tc_records(All, Groups).
-    [#testcase{id=Tc,path=PathBitstring, active=false} || Tc <- AllClean].
+    [#testcase{
+	id=Tc, path=PathBitstring, active=false} || Tc <- AllClean].
 
 
 

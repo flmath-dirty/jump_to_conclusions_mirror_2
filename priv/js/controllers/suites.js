@@ -27,16 +27,6 @@ app.controller("SuitesPanel", function($scope, $http) {
 	    return !angular.equals(SuitePath, Value.path);
 	}
     }
-    
-    this.total = function(){
-	var total = 0;
-	angular.forEach( $scope.suites.data, function(s){
-	    if(s.active){
-		total+= 1;
-	    }
-	});
-	return total;
-    }
 
     this.active_suites = function(){
 	var list = [];
@@ -48,22 +38,8 @@ app.controller("SuitesPanel", function($scope, $http) {
     this.isActive = function(s){
 	return s.active;
     };
-    
-    this.get_testcases = function(){
-	var req_selected =  {"data" : this.selectedSuites}
-	$http.post("http://localhost:8080/testcases", req_selected)
-	    .success(function(response,status)
-		     {
-			 $scope.testcases = response; 
-		     })
-	    .error(function(response,status)
-		   {
-		       console.log(response);
-		   });
-	return $scope.testcases;}
-    
+      
     this.get_testcases = function(Suite){
-	
 	var req_selected =  {"data" :[Suite]}
 	$http.post("http://localhost:8080/testcases", req_selected)
 	    .success(function(response,status)
@@ -72,7 +48,7 @@ app.controller("SuitesPanel", function($scope, $http) {
 			 angular.forEach( response.data, function(s){
 			     var tmp_tc = {}
 			     var swap_ext = {"swapActive" : false}
-			     angular.extend(tmp_tc,s,swap_ext),
+			     angular.extend(tmp_tc,s,swap_ext)
 			     tmp_testcases.push(tmp_tc)
 			 });
 			 $scope.testcases.data = $scope.testcases.data.concat(tmp_testcases); 

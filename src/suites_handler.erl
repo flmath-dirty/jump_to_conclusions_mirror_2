@@ -7,7 +7,7 @@
 
 -include("message_templates.hrl").
 
-%-define(TEST,1).
+%%-define(TEST,1).
 -ifdef(TEST).
 -define(DBG(Message),io:format("Module:~p, Line:~p, :~p~n",[?MODULE ,?LINE, Message])).
 -else.
