@@ -31,3 +31,5 @@ app.directive('swapPanel',function(){
 	templateUrl: 'html/swap-panel.html'
     };
 })
+
+
