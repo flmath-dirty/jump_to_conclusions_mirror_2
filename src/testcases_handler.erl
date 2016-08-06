@@ -10,7 +10,7 @@
 -export([from_json/2]).
 -include("message_templates.hrl").
 
-%%-define(TEST,1).
+-define(TEST,1).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -compile([export_all]).
@@ -103,12 +103,11 @@ testcase_db_update([],Acc) ->
 tc_records_to_jsx(ListOfPathTcTuples) ->
     tc_records_to_jsx(ListOfPathTcTuples, []).
 
-tc_records_to_jsx([#testcase{path=Path,id = Tc, active = Active}|ListOfPathTcTuples], Acc) 
+tc_records_to_jsx([#testcase{path=Path,id = Tc}|ListOfPathTcTuples], Acc) 
   when is_atom(Tc) ->
     JsxList = 
 	[{<<"path">>,Path},
-	 {<<"tc">>, atom_to_binary(Tc,utf8)},
-	 {<<"active">>,Active}],
+	 {<<"tc">>, atom_to_binary(Tc,utf8)}],
     tc_records_to_jsx(ListOfPathTcTuples, [JsxList|Acc]);
 tc_records_to_jsx([], Acc) ->
     Acc;
@@ -133,6 +132,7 @@ compile_suite_and_retrive_tc(Path)->
     compile:file(Path,[{outdir,BeamDir}]),
     code:load_abs(filename:join(BeamDir,BaseName)),
     Module = list_to_atom(BaseName),
+
     PathBitstring = list_to_bitstring(Path),
     TcRecords = get_all_tc_from_beam(PathBitstring, Module),
     TcRecords.
@@ -156,7 +156,6 @@ get_all_tc_from_beam(PathBitstring, Module) ->
 		  "All function not found in ~p ~p ~p~n", [Module, _EClass2,_Error2]),
 		[]
 	end,
-
     AllWithGroups = suite_info_parsing:make_all_flat(All,Groups),
     AllGroup = proplists:get_value('$no_group',AllWithGroups),
     AllClean = clean_tc(AllGroup),
@@ -164,7 +163,7 @@ get_all_tc_from_beam(PathBitstring, Module) ->
 
     %%    list_of_tc_records(All, Groups).
     [#testcase{
-	id=Tc, path=PathBitstring, active=false} || Tc <- AllClean].
+	id=Tc, path=PathBitstring} || Tc <- AllClean].
 
 
 
@@ -177,9 +176,3 @@ clean_tc( [{_Path,TcName}|AllGroup],Acc)->
     clean_tc( AllGroup,[TcName|Acc]);
 clean_tc([],Acc) ->
     Acc.
-
-
-
-
-
-

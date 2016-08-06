@@ -1,6 +1,16 @@
 app.controller("SuitesPanel", function($scope, $http) {
     $http.get("http://localhost:8080/suites")
-	.success(function(response) {$scope.suites = response;});
+	.success(function(response) {
+	    var tmp_suites = []
+	    
+	    angular.forEach( response.data, function(s){
+		var tmp_suite = {}
+		var suite_extended = {"active" : false}
+		angular.extend(tmp_suite,s,suite_extended)
+		tmp_suites.push(tmp_suite)
+	    });
+	    $scope.suites = {"data" : tmp_suites}
+	});
     //		  [{"file":"supervisor_SUITE",
     //		    "path":"%2Fhome%2Fmath%2Fproj%2Ftest%2Fsupervisor_SUITE.erl",
     //		    "active":true}]}
@@ -40,14 +50,17 @@ app.controller("SuitesPanel", function($scope, $http) {
     };
     
     this.get_testcases = function(Suite){
-	var req_selected =  {"data" :[Suite]}
+	var SuiteWithoutActive = {"file" : Suite.file,
+				  "path": Suite.path}
+	var req_selected =  {"data" :[SuiteWithoutActive]}
 	$http.post("http://localhost:8080/testcases", req_selected)
 	    .success(function(response,status)
 		     { 
 			 var tmp_testcases = []
 			 angular.forEach( response.data, function(s){
 			     var tmp_tc = {}
-			     var swap_ext = {"swapActive" : false}
+			     var swap_ext = {"swapActive" : false,
+					     "active" : false}
 			     angular.extend(tmp_tc,s,swap_ext)
 			     tmp_testcases.push(tmp_tc)
 			 });
@@ -197,69 +210,7 @@ app.controller("SwapPanel", function($scope, $http) {
 
 
 
-/*
-  app.controller("OptionsPanel", function($scope, $http) {
-  
-  this.get_option = function(option_key){
-  console.log(option_key)
-  var req_option =  {"data" : option_key}
-  $http.post("http://localhost:8080/options", req_option)
-  .success(function(response,status)
-  {$scope.option_value = response.data;})
-  .error(function(response,status)
-  {console.log(response);})
-  console.log($scope.option_value)
-  return $scope.option;
-  }
-  // $scope.option_value= this.get_option('full_testlog_index')
-  })
-
-  app.controller("LogsPanel", function($scope, $window) {
-  
-  $window.onpopstate = function(event) {
-  console.log("location: ");
-  };
-  
-  $window.onpushstate = function(event) {
-  console.log("location: ");
-  };
-  
-  this.history_forward = function(){
-  log_frame_name.history.forward()
-  }
-
-
-  this.history_back = function(){
-  log_frame_name.history.back()
-  }
-
-  })
-
-  app.config(function($routeProvider) {
-  $routeProvider
-  .when("/", {
-  templateUrl : "logs/all_runs.html"
-  });
-  });
-  log_frame_name.addEventListener('popstate', function(event) {
-  if (event.state) {
-  console.log("location: ");
-  }
-  }, false);
-
-  onpopstate = function(event) {
-  console.log("location: ");
-  };
-  
-  onpushstate = function(event) {
-  console.log("location: ");
-  };
-*/
-
 app.controller("LogsPanel", function($scope) {
-    //this.iframe = document.getElementById("log_path").contentWindow.history
-
-
     $scope.log_location = "logs/all_runs.html" 
     $scope.history_queue_back = []
     $scope.history_queue_forward = []
@@ -274,15 +225,10 @@ app.controller("LogsPanel", function($scope) {
 
     $(log_path).on('load', function(event) {
 	if($scope.check_onload_loop === true){
-	    //console.log("location: "+  $(log_path).context.contentWindow.document.documentURI)
 	    $scope.history_queue_back.push($scope.log_location)
 	    $scope.log_location = $(log_path).context.contentWindow.document.documentURI
 	    $scope.history_queue_forward = []
-	    //console.log("back "+$scope.history_queue_back)
-	    //console.log("forward "+$scope.history_queue_forward)
-	    
 	}else{
-	    //console.log("set check_onload_loop on")
 	    $scope.check_onload_loop = true
 	}
     });
@@ -296,26 +242,18 @@ app.controller("LogsPanel", function($scope) {
 	    $scope.log_location = $scope.history_queue_forward.pop()
 	    $(log_path).context.src = $scope.log_location
 	}
-	//console.log("forward pushed ")
-	//console.log("back "+$scope.history_queue_back)
-	//console.log("forward "+$scope.history_queue_forward)
     }
     
     this.history_back = function(){
 	//log_frame_name.history.back()
-	//console.log("back pushed " + $scope.history_queue_back.length)
-	
 	if($scope.history_queue_back.length>0){
-	    //console.log("back pushed and executed")
+
 	    $scope.history_queue_forward.push($scope.log_location)
 	    $scope.check_onload_loop = false //omit next onload
 	    $scope.log_location = $scope.history_queue_back.pop()
 	    $(log_path).context.src = $scope.log_location
-	    //$(log_path).context.src
 	    
 	}
-	// console.log("back "+$scope.history_queue_back)
-	// console.log("forward "+$scope.history_queue_forward)
     }
     this.history_home = function(){
 	//$scope.history_queue_back.push("logs/all_runs.html")
@@ -324,9 +262,6 @@ app.controller("LogsPanel", function($scope) {
 	$scope.log_location = "logs/all_runs.html"
 	$scope.history_queue_forward = []
 	$(log_path).context.src = $scope.log_location
-	//console.log("history home pushed ")
-	//console.log("back "+$scope.history_queue_back)
-	//console.log("forward "+$scope.history_queue_forward)
     }
     
 })

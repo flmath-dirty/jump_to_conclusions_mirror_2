@@ -50,7 +50,6 @@ suites_paths_to_records([H|Files], Acc) ->
     Record = 
 	#suites{file=filename:basename(H, ".erl"),
 		path=list_to_bitstring(H),
-		active=false,
 		update_time = filelib:last_modified(H)},
     ?DBG(Record#suites.update_time),    
     suites_paths_to_records(Files, [Record|Acc]).
@@ -62,8 +61,7 @@ suites_records_to_jsx([H|List], Acc)->
    SuiteJsx =   
 	[
 	 {<<"file">>,list_to_bitstring(H#suites.file)},
-	 {<<"path">>,H#suites.path},
-	 {<<"active">>,H#suites.active}
+	 {<<"path">>,H#suites.path}
 	],
     suites_records_to_jsx(List,[SuiteJsx|Acc]);
 suites_records_to_jsx([],Acc) ->
