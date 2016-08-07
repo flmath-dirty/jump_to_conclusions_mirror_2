@@ -80,9 +80,10 @@ app.controller("TestcasePanel", function($scope, $http) {
 	s.active = !s.active;
 	var list = [];
 	angular.forEach($scope.testcases.data, function(s){
-	    if(s.active){list.push(s);}
+	    if(s.active){list.push(
+		{"tc" : s.tc,
+		 "path" : s.path});}
 	});
-
 	$scope.selectedTc = list
 	return list;
     };
@@ -190,9 +191,13 @@ app.controller("SwapPanel", function($scope, $http) {
 	return list
     }
     this.updateSelectedTc= function(){
-	listSelected = []
+	var listSelected = []
 	angular.forEach($scope.testcases.data, function(s){
-	    if(s.active){listSelected.push(s);}
+	    if(s.active){
+		contracted_s = 	{"tc" : s.tc,
+				 "path" : s.path}
+		listSelected.push(contracted_s)
+		;}
 	});
 	$scope.selectedTc = listSelected
 	return listSelected
