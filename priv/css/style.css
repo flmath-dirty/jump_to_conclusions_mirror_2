@@ -140,7 +140,7 @@ body, #main_container {
     height: 100%;
 }
 #suite_menu [class*="col-"] .list-group, #swap_menu [class*="col-"] .list-group {
-    height: 93%;
+    height: 80%;
     width: 100%;    
     overflow-y: auto;
     background-color: #fff;

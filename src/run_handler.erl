@@ -12,7 +12,7 @@
 
 -export([execute/1]).
 
-%-define(TEST,1).
+%%-define(TEST,1).
 -ifdef(TEST).
 -define(DBG(Message),io:format("Module: ~p, Line:~p, :~p~n",[?MODULE ,?LINE, Message])).
 -else.
@@ -20,13 +20,13 @@
 -endif.
 
 init(Req, Opts) ->
- _Headers = cowboy_req:headers( Req),
-   %% Headers = cowboy_req:meta(media_type,Req),
+    _Headers = cowboy_req:headers( Req),
+    %% Headers = cowboy_req:meta(media_type,Req),
     ?DBG([[_Headers]]),
     {cowboy_rest, Req, Opts}.
 
 allowed_methods(Req, State) ->
-        {[<<"GET">>, <<"POST">>], Req, State}.
+    {[<<"GET">>, <<"POST">>], Req, State}.
 
 charsets_accepted(Req, State) ->
     {[<<"utf-8">>,<<"UTF-8">>], Req, State}.
@@ -39,27 +39,27 @@ content_types_provided(Req, State) ->
 content_types_accepted(Req, State) ->
     {[
       {{<<"application">>, <<"json">>, [{<<"charset">>, <<"utf-8">>}]},from_json}
-	  ], Req, State}.
+     ], Req, State}.
 
 from_json(Req, State) ->
     ?DBG(["from json"]),
     case cowboy_req:method(Req) of
 	<<"POST">> ->
-	?DBG(["POST received"]), 
-	?DBG(["Request run"]),
-	{ok,ReqBody,Req2} = cowboy_req:body(Req),
-	[{<<"data">>,Selected}] = jsx:decode(ReqBody),	
-	?DBG(Selected),
-	ListOfTc = selected_tc_to_list(Selected),
-	?DBG(ListOfTc),
+	    ?DBG(["POST received"]), 
+	    ?DBG(["Request run"]),
+	    {ok,ReqBody,Req2} = cowboy_req:body(Req),
+	    [{<<"data">>,Selected}] = jsx:decode(ReqBody),	
+	    ?DBG(Selected),
+	    ListOfTc = selected_tc_to_list(Selected),
+	    ?DBG(ListOfTc),
 
-	ExecutionStrings =  list_of_tc_to_exe_string(ListOfTc),
-	?DBG(ExecutionStrings),
-	execute(ExecutionStrings),
-	Response = jsx:encode([{<<"result">>,true}]),
-	?DBG(Response),
-	{true,cowboy_req:set_resp_body(Response,Req2),State};
-	        _ ->
+	    ExecutionStrings =  list_of_tc_to_exe_string(ListOfTc),
+	    ?DBG(ExecutionStrings),
+	    execute(ExecutionStrings),
+	    Response = jsx:encode([{<<"result">>,true}]),
+	    ?DBG(Response),
+	    {true,cowboy_req:set_resp_body(Response,Req2),State};
+	_ ->
 	    {true, Req, State}
     end.
 execute([]) -> [];

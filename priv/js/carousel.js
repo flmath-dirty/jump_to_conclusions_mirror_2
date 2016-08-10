@@ -17,11 +17,10 @@ $(document).ready( function() {
 		var count = $('.nav').children().length -1;
 		var current = $('.nav li.active');
 		
-	//	console.log(current)
-	//	console.log(count)
+		//console.log(current)
+		//console.log(count)
 		var id = parseInt(current.data('slide-to'));
-	//	console.log(id)
-		
+		//console.log(id)
 		if(e.direction=="left"){
 		    if(count == id) {
 			$('.nav li').first().addClass('active');

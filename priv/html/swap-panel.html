@@ -1,32 +1,13 @@
-
 <div id="swap_menu" class="container-fluid">
   <div class="col-lg-5">
-    <nav class="list-group">
-      <ul>	  
-	<li class="list-group-item" ng-repeat="tc in swapUnselectedTc" ng-click="swapPanel.toggleSelected(tc)" ng-class="{swapActive:swapPanel.isSelected(tc)}">
-	  {{tc.tc}} 
-	</li>
-      </ul> 
-    </nav> 
+    <swap-panel-left></swap-panel-left>
   </div>
 
   <div class="col-lg-2">
-    
-    <button type="button" id="swap_in" class="btn btn-primary btn-lg" ng-click="swapPanel.swapIn()">
-      ">>"</button>
-    <button type="button" id="swap_out" class="btn btn-primary btn-lg" ng-click="swapPanel.swapOut()">
-      "<<"</button>
-	  <button type="button" id="swap_both" class="btn btn-primary btn-lg" ng-click="swapPanel.swapBoth()">
-	    "<< >>"</button>
+    <swap-panel-buttons></swap-panel-buttons>
   </div>
 
   <div class="col-lg-5" > 
-    <nav class="list-group">
-      <ul>	 
-	<li class="list-group-item" ng-repeat="tc in swapSelectedTc" ng-click="swapPanel.toggleSelected(tc)" ng-class="{swapActive:swapPanel.isSelected(tc)}">
-	  {{tc.tc}} 
-	</li>
-      </ul> 
-    </nav>
+    <swap-panel-right></swap-panel-right>
   </div>
 </div>
