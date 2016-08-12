@@ -55,6 +55,8 @@ app.directive('swapPanelButtons',function(){
 app.directive('runButton',function(){
     return{
 	restrict: 'E',
+	controller: 'RunButton',
+	controllerAs: 'runButton',
 	templateUrl: 'html/run-button.html'
     };
 })
