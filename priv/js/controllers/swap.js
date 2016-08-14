@@ -29,11 +29,6 @@ app.controller("SwapPanel", function($scope, $http) {
     this.isActive = function(s){
 	return s.active;
     };
-
-
-    this.debugSelectedTc = function(){ 
-	console.log($scope.selectedTc)
-    }
     
     this.swapOut = function(){ 
 	var list = []
