@@ -13,13 +13,13 @@
 -define(DBG(Message),true).
 -endif.
 
-%% To parse all() function when we already know groups() we adding {'$no_group',[],all()}
+%% To parse all() function when we already know groups() we adding {'$root_group',[],all()}
 %% mechainizm is the same 
 get_all_inline(All, Groups)->
-    get_groups_inline([{'$no_group',[],All}|Groups]).
+    get_groups_inline([{'$root_group',[],All}|Groups]).
 
 make_all_flat(All, Groups)->
-    make_groups_flat([{'$no_group',[],All}|Groups]).
+    make_groups_flat([{'$root_group',[],All}|Groups]).
 
 %% solving groups
 get_groups_inline(Groups)->

@@ -103,11 +103,15 @@ testcase_db_update([],Acc) ->
 tc_records_to_jsx(ListOfPathTcTuples) ->
     tc_records_to_jsx(ListOfPathTcTuples, []).
 
-tc_records_to_jsx([#testcase{path=Path,id = Tc}|ListOfPathTcTuples], Acc) 
+tc_records_to_jsx([#testcase{path=Path,id = Tc, group_path=GroupPath}|ListOfPathTcTuples], Acc) 
   when is_atom(Tc) ->
+     ?DBG(GroupPath),
+    
     JsxList = 
 	[{<<"path">>,Path},
-	 {<<"tc">>, atom_to_binary(Tc,utf8)}],
+	 {<<"tc">>, atom_to_binary(Tc,utf8)},
+	 {<<"group_path">>, group_path_to_binary(GroupPath)}
+	],
     tc_records_to_jsx(ListOfPathTcTuples, [JsxList|Acc]);
 tc_records_to_jsx([], Acc) ->
     Acc;
@@ -115,6 +119,18 @@ tc_records_to_jsx([Data|ListOfPathTcTuples], Acc) ->
     error_logger:warning_msg("Not test description structure matched ~p~n", [Data]),
     tc_records_to_jsx(ListOfPathTcTuples, Acc).
 
+group_path_to_binary(Path)->
+    group_path_to_binary(Path,<<>>).
+
+group_path_to_binary(['$root_group'],Acc)->
+    ?DBG(Acc),
+    Acc;
+   %% BinModule = atom_to_binary(Module,utf8),
+   %%<<BinModule/bitstring,<<":">>/bitstring,Acc/bitstring>>;
+group_path_to_binary([Head|Tail]=_Path,Acc)->
+    BinHead = atom_to_binary(Head,utf8),
+    AppendAcc = <<BinHead/bitstring,<<"/">>/bitstring,Acc/bitstring>>,
+    group_path_to_binary(Tail,AppendAcc).
 
 selected_suites_to_path_list(JsonListSelectedSuites)->
     selected_suites_to_path_list(JsonListSelectedSuites,[]).
@@ -157,22 +173,11 @@ get_all_tc_from_beam(PathBitstring, Module) ->
 		[]
 	end,
     AllWithGroups = suite_info_parsing:make_all_flat(All,Groups),
-    AllGroup = proplists:get_value('$no_group',AllWithGroups),
-    AllClean = clean_tc(AllGroup),
+    ?DBG(AllWithGroups),
+    AllGroup = proplists:get_value('$root_group',AllWithGroups),
     %% All = Module:all(),
 
     %%    list_of_tc_records(All, Groups).
     [#testcase{
-	id=Tc, path=PathBitstring} || Tc <- AllClean].
+	id=Tc, path=PathBitstring, group_path=GroupPath} || {GroupPath,Tc} <- AllGroup].
 
-
-
-
-clean_tc( AllGroup)->
-    clean_tc( AllGroup,[]).
-
-
-clean_tc( [{_Path,TcName}|AllGroup],Acc)->
-    clean_tc( AllGroup,[TcName|Acc]);
-clean_tc([],Acc) ->
-    Acc.
