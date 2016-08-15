@@ -4,10 +4,11 @@
   <input type="text" class="form-control" ng-model="searchTestcases">
 </div>
 
-<nav class="list-group">
-  <ul>	  
-    <li class="list-group-item" ng-repeat="tc in testcases.data | filter:searchTestcases" ng-click="tcPanel.toggleActive(tc)" ng-class="{active:tcPanel.isActive(tc)}">
-      {{tc.tc}} 
-    </li>
-  </ul> 
-</nav>
+<ul class="list-group">	  
+  <li class="list-group-item" ng-repeat="tc in testcases.data | filter:searchTestcases"
+      ng-click="tcPanel.toggleActive(tc)"
+      ng-class="{active:tcPanel.isActive(tc)}">
+    <h4 class="list-group-item-heading"> {{tc.tc}} </h4>
+    <p class="list-group-item-text"> {{tc.group_path}} </p>
+  </li>
+</ul> 

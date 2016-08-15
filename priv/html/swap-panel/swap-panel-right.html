@@ -4,11 +4,12 @@
   <input type="text" class="form-control" ng-model="searchRight">
 </div>
 
-<nav class="list-group">
-  <ul>	 
-    <li class="list-group-item" ng-repeat="tc in swapSelectedTc | filter:searchRight" 
-	ng-click="swapPanel.toggleSelected(tc)" ng-class="{swapActive:swapPanel.isSelected(tc)}">
-      {{tc.tc}} 
-    </li>
-  </ul> 
-</nav>
+
+<ul class="list-group">	 
+  <li class="list-group-item" ng-repeat="tc in swapSelectedTc | filter:searchRight" 
+      ng-click="swapPanel.toggleSelected(tc)"
+      ng-class="{swapActive:swapPanel.isSelected(tc)}">
+    <h4 class="list-group-item-heading"> {{tc.tc}} </h4>
+    <p class="list-group-item-text"> {{tc.group_path}} </p>
+  </li>
+</ul> 

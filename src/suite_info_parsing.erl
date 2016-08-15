@@ -3,7 +3,7 @@
 -export([get_groups_inline/1, make_groups_flat/1]).
 -export([]).
 
--define(TEST,1).
+%%-define(TEST,1).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -compile([export_all]).

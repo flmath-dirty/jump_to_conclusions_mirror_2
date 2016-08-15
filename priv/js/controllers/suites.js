@@ -1,16 +1,22 @@
 app.controller("SuitesPanel", function($scope, $http, ErlServerInterface) {
+    
     $scope.suites = {"data":[]}
+    
     var promiseSuite = ErlServerInterface.getSuites()
     promiseSuite.success(function(response) {	
 	var tmp_suites = []	  
 	angular.forEach(response.data, function(s){
 	    var tmp_suite = {}
-	    var suite_extended = {"active" : false}
+	    var path_cut_index = s.path.lastIndexOf("/")
+	    var root_path = s.path.substr(0,path_cut_index+1)
+	    var suite_extended = {"active" : false,
+				 "root_path": root_path}
 	    angular.extend(tmp_suite,s,suite_extended)
 	    tmp_suites.push(tmp_suite)
 	});
 	$scope.suites.data = tmp_suites
     })
+    
     $scope.testcases =  {"data":[]}
     
     this.toggleActive = function(Suite){
@@ -24,8 +30,10 @@ app.controller("SuitesPanel", function($scope, $http, ErlServerInterface) {
 		    var swap_ext = {"swapActive" : false,
 				    "active" : false}
 		    angular.extend(tmp_tc,s,swap_ext)
+		    tmp_tc.group_path= Suite.file +":"+tmp_tc.group_path
 		    tmp_testcases.push(tmp_tc)   
 		});
+		
 		$scope.testcases.data = tmp_testcases.concat($scope.testcases.data)
 	    })	     
 	}

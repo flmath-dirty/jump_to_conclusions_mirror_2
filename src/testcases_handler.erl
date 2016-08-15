@@ -10,7 +10,7 @@
 -export([from_json/2]).
 -include("message_templates.hrl").
 
--define(TEST,1).
+%%-define(TEST,1).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -compile([export_all]).

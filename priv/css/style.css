@@ -22,6 +22,7 @@ body, #main_container {
     height:5%;
     width: 100%;
     text-align: center;
+    font-size:125%;
 }
 
  #tools_menu
@@ -43,8 +44,7 @@ body, #main_container {
 }
 
 
-#carousel_body
-{
+#carousel_body{
     top:10%;
     height:90%;
     width: 100%;
@@ -146,27 +146,28 @@ body, #main_container {
     background-color: #fff;
     border-radius:0px;
 }
-li.list-group-item:hover {
+
+li.list-group-item:hover,
+li.list-group-item:hover > .p
+ {
     width: 100%;
     background:aqua;
     color:black;
     border-radius:0px;
 }
-li.list-group-item:hover[class*="active"] {
+
+
+li.list-group-item:hover[class*="active"],
+li.list-group-item:hover[class*="active"] > .p {
     width: 100%;
     background-color:#337ab7;
     border-color:#2e6da4;
-    color:black;
+    color:white;
     border-radius:0px;
 }
-li.list-group-item[class*="swapActive"] {
-    width: 100%;
-    background-color:#337ab7;
-    border-color:#2e6da4;
-    color:black;
-    border-radius:0px;
-}
-li.list-group-item:hover[class*="swapActive"] {
+li.list-group-item[class*="swapActive"],
+li.list-group-item[class*="swapActive"] > .p
+{
     width: 100%;
     background-color:#337ab7;
     border-color:#2e6da4;
@@ -174,6 +175,15 @@ li.list-group-item:hover[class*="swapActive"] {
     border-radius:0px;
 }
 
+li.list-group-item:hover[class*="swapActive"],
+li.list-group-item:hover[class*="swapActive"] > .p
+{
+    width: 100%;
+    background-color:#337ab7;
+    border-color:#2e6da4;
+    color:white;
+    border-radius:0px;
+}
 
 
 #swap_in {
