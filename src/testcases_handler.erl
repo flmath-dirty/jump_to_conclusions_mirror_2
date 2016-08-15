@@ -175,8 +175,6 @@ get_all_tc_from_beam(PathBitstring, Module) ->
     AllWithGroups = suite_info_parsing:make_all_flat(All,Groups),
     ?DBG(AllWithGroups),
     AllGroup = proplists:get_value('$root_group',AllWithGroups),
-    %% All = Module:all(),
-
     %%    list_of_tc_records(All, Groups).
     [#testcase{
 	id=Tc, path=PathBitstring, group_path=GroupPath} || {GroupPath,Tc} <- AllGroup].

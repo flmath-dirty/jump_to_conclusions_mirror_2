@@ -1,6 +1,7 @@
 -module(suite_info_parsing).
 
--export([get_groups_inline/1, make_groups_flat/1]).
+-export([get_groups_inline/1, make_groups_flat/1,
+	 make_all_flat/2, get_groups_inline/2]).
 -export([]).
 
 %%-define(TEST,1).
