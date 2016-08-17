@@ -45,7 +45,6 @@ jsx	:
 
 cowlib	:
 	mkdir -p $(COWLIB_ROOT)/ebin/
-	cp $(COWLIB_ROOT)/src/cowlib.app.src $(COWLIB_ROOT)/ebin/cowlib.app
 	$(ERLC)  -I $(COWLIB_ROOT)/include -o $(COWLIB_ROOT)/ebin $(COWLIB_ROOT)/src/*.erl
 ranch	:
 	mkdir -p $(RANCH_ROOT)/ebin/

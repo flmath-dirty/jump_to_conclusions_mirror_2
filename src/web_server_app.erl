@@ -43,9 +43,9 @@ start(_Type, _Args) ->
 
     jtc_tc_db = ets:new(jtc_tc_db,[bag,{keypos,#testcase.path},named_table,public]),
     jtc_suites_db = ets:new(jtc_suites_db,[set,{keypos,#suites.path},named_table,public]),
-    {ok, _} = cowboy:start_http(http, 100, [{port, 8080}], 
-				[{env, [{dispatch, Dispatch}]}
-				]),
+    {ok, _} = cowboy:start_clear(http, 100, [{port, 8080}],#{
+					      env=> #{dispatch=> Dispatch}
+					     }),
     web_server_sup:start_link().
 
 stop(_State) ->

@@ -20,9 +20,9 @@
 -endif.
 
 init(Req, Opts) ->
-    _Headers = cowboy_req:headers( Req),
+    %%_Headers = cowboy_req:headers( Req),
     %% Headers = cowboy_req:meta(media_type,Req),
-    ?DBG([[_Headers]]),
+    %%?DBG([[_Headers]]),
     {cowboy_rest, Req, Opts}.
 
 allowed_methods(Req, State) ->
@@ -47,7 +47,7 @@ from_json(Req, State) ->
 	<<"POST">> ->
 	    ?DBG(["POST received"]), 
 	    ?DBG(["Request run"]),
-	    {ok,ReqBody,Req2} = cowboy_req:body(Req),
+	    {ok,ReqBody,Req2} = cowboy_req:read_body(Req),
 	    [{<<"data">>,Selected}] = jsx:decode(ReqBody),	
 	    ?DBG(Selected),
 	    ListOfTc = selected_tc_to_list(Selected),

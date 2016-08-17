@@ -10,7 +10,7 @@
 -export([from_json/2]).
 -include("message_templates.hrl").
 
-%%-define(TEST,1).
+-define(TEST,1).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -compile([export_all]).
@@ -21,9 +21,9 @@
 -endif.
 
 init(Req, Opts) ->
-    _Headers = cowboy_req:headers(Req),
+    %%_Headers = cowboy_req:headers(Req),
     %%_Headers = cowboy_req:meta(media_type,Req),
-    ?DBG([[_Headers]]),
+    %%?DBG([[_Headers]]),
     {cowboy_rest, Req, Opts}.
 
 allowed_methods(Req, State) ->
@@ -48,7 +48,7 @@ from_json(Req, State) ->
 	<<"POST">> ->
 	    ?DBG(["POST received"]), 
 	    ?DBG(["Request testcases"]),
-	    {ok,ReqBody,Req2} = cowboy_req:body(Req),
+	    {ok,ReqBody,Req2} = cowboy_req:read_body(Req),
 	    [{<<"data">>,SelectedSuites}] = jsx:decode(ReqBody),	
 	    ?DBG(SelectedSuites),
 	    ListOfSuitesPathes = selected_suites_to_path_list(SelectedSuites),
